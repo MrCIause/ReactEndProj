@@ -1,4 +1,3 @@
-// src/Components/Header.js
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -24,7 +23,7 @@ export default function Header() {
           <nav className="col-auto">
             <ul className="nav">
               <li className="nav-item">
-                <Link className="nav-link" to="/">
+                <Link className="nav-link" to="/Home">
                   Home
                 </Link>
               </li>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 
 export default function EmployeeDetails() {
@@ -7,12 +8,32 @@ export default function EmployeeDetails() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    const userDetails = favorites.find((fav) => fav.login.uuid === id);
-    if (userDetails) {
-      setUser(userDetails);
-      console.log("User Details:", userDetails);
-    }
+    const fetchUser = async () => {
+      const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+      const generatedUsers =
+        JSON.parse(localStorage.getItem("generatedUsers")) || [];
+      const userDetails =
+        favorites.find((fav) => fav.login.uuid === id) ||
+        generatedUsers.find((user) => user.login.uuid === id);
+
+      if (userDetails) {
+        console.log("Found user details in localStorage:", userDetails);
+        setUser(userDetails);
+      } else {
+        try {
+          const response = await axios.get(
+            `https://randomuser.me/api/?uuid=${id}`
+          );
+          const fetchedUser = response.data.results[0];
+          console.log("Fetched user details from API:", fetchedUser);
+          setUser(fetchedUser);
+        } catch (error) {
+          console.error("User not found with id:", id);
+        }
+      }
+    };
+
+    fetchUser();
   }, [id]);
 
   if (!user) {
@@ -21,35 +42,15 @@ export default function EmployeeDetails() {
 
   const addToFavorites = () => {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    localStorage.setItem("favorites", JSON.stringify([...favorites, user]));
-  };
-
-  const validateCoordinates = (latitude, longitude) => {
-    const lat = parseFloat(latitude);
-    const lon = parseFloat(longitude);
-    if (
-      isNaN(lat) ||
-      isNaN(lon) ||
-      lat < -90 ||
-      lat > 90 ||
-      lon < -180 ||
-      lon > 180
-    ) {
-      return false;
+    if (!favorites.find((fav) => fav.login.uuid === user.login.uuid)) {
+      localStorage.setItem("favorites", JSON.stringify([...favorites, user]));
     }
-    return true;
   };
 
-  const latitude = user.location.coordinates.latitude;
-  const longitude = user.location.coordinates.longitude;
+  const latitude = parseFloat(user.location.coordinates.latitude);
+  const longitude = parseFloat(user.location.coordinates.longitude);
 
-  if (!validateCoordinates(latitude, longitude)) {
-    console.error("Invalid coordinates:", { latitude, longitude });
-    return <div>Invalid location data.</div>;
-  }
-
-  const lat = parseFloat(latitude);
-  const lon = parseFloat(longitude);
+  console.log("User Coordinates:", { latitude, longitude });
 
   return (
     <div>
@@ -63,12 +64,12 @@ export default function EmployeeDetails() {
       <p>Picture: </p>
       <img src={user.picture.large} alt="User Large" />
       <MapContainer
-        center={[lat, lon]}
+        center={[latitude, longitude]}
         zoom={13}
         style={{ height: "400px", width: "100%" }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <Marker position={[lat, lon]}>
+        <Marker position={[latitude, longitude]}>
           <Popup>{`${user.location.city}, ${user.location.country}`}</Popup>
         </Marker>
       </MapContainer>

@@ -15,6 +15,11 @@ export default function Home() {
         .get(`https://randomuser.me/api/?results=10&seed=${query}`)
         .then((response) => {
           setUsers(response.data.results);
+          // Save users to localStorage
+          localStorage.setItem(
+            "generatedUsers",
+            JSON.stringify(response.data.results)
+          );
         })
         .catch((error) => console.error("Error fetching data:", error));
     },
@@ -23,10 +28,7 @@ export default function Home() {
 
   const addToFavorites = (user) => {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-    const userIndex = favorites.findIndex(
-      (fav) => fav.login.uuid === user.login.uuid
-    );
-    if (userIndex === -1) {
+    if (!favorites.find((fav) => fav.login.uuid === user.login.uuid)) {
       localStorage.setItem("favorites", JSON.stringify([...favorites, user]));
     }
   };
