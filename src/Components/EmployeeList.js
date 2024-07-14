@@ -3,37 +3,38 @@ import { Link } from "react-router-dom";
 
 export default function EmployeeList({ users, addToFavorites }) {
   return (
-    <div>
+    <div className="container mt-3">
       <h2>Employee List</h2>
-      <table className="table table-bordered table-responsive">
-        <tbody>
-          {users.map((user, idx) => (
-            <tr key={idx}>
-              <td className="text-center align-middle">
-                <img
-                  src={user.picture.thumbnail}
-                  alt={`${user.name.first} ${user.name.last}`}
-                  className="img-fluid"
-                  style={{ maxHeight: "150px" }}
-                />
-                <p>{`${user.name.first} ${user.name.last}`}</p>
-                <p>{user.email}</p>
-                <p>Age: {user.dob.age}</p>
-                <p>{`${user.location.city}, ${user.location.country}`}</p>
+      <div className="row">
+        {users.map((user, idx) => (
+          <div className="col-md-3 mb-3" key={idx}>
+            <div className="card h-100">
+              <img
+                src={user.picture.thumbnail}
+                alt={`${user.name.first} ${user.name.last}`}
+                className="card-img-top"
+              />
+              <div className="card-body">
+                <h5 className="card-title">{`${user.name.first} ${user.name.last}`}</h5>
+                <p className="card-text">{user.email}</p>
+                <p className="card-text">Age: {user.dob.age}</p>
+                <p className="card-text">{`${user.location.city}, ${user.location.country}`}</p>
+              </div>
+              <div className="card-footer">
                 <Link to={`/employee/${user.login.uuid}`}>
-                  <button className="btn btn-info">Details</button>
+                  <button className="btn btn-info btn-sm me-2">Details</button>
                 </Link>
                 <button
-                  className="btn btn-warning"
+                  className="btn btn-warning btn-sm"
                   onClick={() => addToFavorites(user)}
                 >
                   Add to Favorites
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { Link } from "react-router-dom";
 
 export default function EmployeeDetails() {
   const { id } = useParams();
@@ -73,9 +74,15 @@ export default function EmployeeDetails() {
           <Popup>{`${user.location.city}, ${user.location.country}`}</Popup>
         </Marker>
       </MapContainer>
-      <button className="btn btn-warning" onClick={addToFavorites}>
-        Save as favorite
+      <button
+        className="btn btn-info btn-warning me-2"
+        onClick={addToFavorites}
+      >
+        addToFavorites
       </button>
+      <Link to={"/"}>
+        <button className="btn btn-info btn-sm me-2">Home</button>
+      </Link>
     </div>
   );
 }

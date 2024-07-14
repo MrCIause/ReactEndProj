@@ -23,7 +23,7 @@ export default function Header() {
           <nav className="col-auto">
             <ul className="nav">
               <li className="nav-item">
-                <Link className="nav-link" to="/Home">
+                <Link className="nav-link" to="/">
                   Home
                 </Link>
               </li>

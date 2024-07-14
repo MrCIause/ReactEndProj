@@ -5,26 +5,35 @@ import EmployeeList from "../Components/EmployeeList";
 
 export default function Home() {
   const [input, setInput] = useState("");
-  const [users, setUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const location = useLocation();
 
   const handleSearch = useCallback(
     (searchTerm) => {
       const query = searchTerm || input || "default";
       axios
-        .get(`https://randomuser.me/api/?results=10&seed=${query}`)
+        .get(`https://randomuser.me/api/?results=50&seed=${query}`)
         .then((response) => {
-          setUsers(response.data.results);
-          // Save users to localStorage
-          localStorage.setItem(
-            "generatedUsers",
-            JSON.stringify(response.data.results)
-          );
+          const users = response.data.results;
+          setAllUsers(users);
+          localStorage.setItem("generatedUsers", JSON.stringify(users));
+          filterUsers(users, query);
         })
         .catch((error) => console.error("Error fetching data:", error));
     },
     [input]
   );
+
+  const filterUsers = (users, query) => {
+    const lowercasedQuery = query.toLowerCase();
+    const filtered = users.filter(
+      (user) =>
+        user.name.first.toLowerCase().includes(lowercasedQuery) ||
+        user.name.last.toLowerCase().includes(lowercasedQuery)
+    );
+    setFilteredUsers(filtered);
+  };
 
   const addToFavorites = (user) => {
     const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -43,6 +52,10 @@ export default function Home() {
     }
   }, [location, handleSearch]);
 
+  useEffect(() => {
+    filterUsers(allUsers, input);
+  }, [input, allUsers]);
+
   return (
     <div className="container mt-3">
       <div className="input-group mb-3">
@@ -56,7 +69,7 @@ export default function Home() {
           Search
         </button>
       </div>
-      <EmployeeList users={users} addToFavorites={addToFavorites} />
+      <EmployeeList users={filteredUsers} addToFavorites={addToFavorites} />
     </div>
   );
 }
