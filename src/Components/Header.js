@@ -19,7 +19,7 @@ export default function Header() {
       <div className="container p-2">
         <div className="row align-items-center">
           <div className="logo col-auto">
-            <h2>My logo</h2>
+            <h2>ReactProj</h2>
           </div>
           <nav className="col-auto">
             <ul className="nav">
@@ -42,10 +42,10 @@ export default function Header() {
                 className="form-control"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="חפש..."
+                placeholder="Search"
               />
               <button type="submit" className="btn btn-primary">
-                חפש
+                Search
               </button>
             </form>
           </div>
